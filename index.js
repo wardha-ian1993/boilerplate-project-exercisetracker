@@ -72,7 +72,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 
 app.get('/api/users', async (req, res) => {
   try {
-    const users = await User.find({}, 'username'); // Retrieve only usernames
+    const users = await User.find({}, 'username');
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
