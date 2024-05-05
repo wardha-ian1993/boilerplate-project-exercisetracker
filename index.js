@@ -33,7 +33,7 @@ app.post('/api/users', async (req, res) => {
   await User.create({ username: username });
   
   const user = await User.findOne({ username: username });
-  res.json({ id: user.id, username: username });
+  res.json({ _id: user._id, username: username });
 });
 
 app.post('/api/users/:_id/exercises', async (req, res) => {
