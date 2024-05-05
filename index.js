@@ -50,9 +50,8 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     const newExercise = {
       description: description,
       duration: parseInt(duration),
-      date: date ? new Date(date) : new Date()
+      date: date ? new Date(date).toDateString() : new Date().toDateString()
     };
-
 
     user.log.push(newExercise);
     await user.save();
@@ -62,8 +61,9 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       username: user.username,
       description: newExercise.description,
       duration: newExercise.duration,
-      date: newExercise.date.toDateString()
+      date: newExercise.date
     });
+  
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -93,7 +93,10 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     let logs = user.log;
 
     if (from && to) {
-      logs = logs.filter(log => log.date >= new Date(from) && log.date <= new Date(to));
+      logs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= new Date(from) && logDate <= new Date(to);
+      });
     }
     if (limit) {
       logs = logs.slice(0, parseInt(limit));
@@ -101,11 +104,17 @@ app.get('/api/users/:_id/logs', async (req, res) => {
 
     const logCount = logs.length;
 
+    const responseLogs = logs.map(log => ({
+      description: log.description,
+      duration: log.duration,
+      date: new Date(log.date).toDateString()
+    }));
+
     const response = {
       _id: userId,
       username: user.username,
       count: logCount,
-      log: logs
+      log: responseLogs
     };
 
     res.json(response);
